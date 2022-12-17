@@ -10,6 +10,7 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
 if ($_SESSION['role'] != 1) {
   header('Location:login.php');
 }
+
 if ($_POST) {
   setcookie('search',$_POST['search'],time() + (86400 * 30), "/");
 }
@@ -21,6 +22,7 @@ else{
 }
 
 ?>
+
 <?php include('header.php');?>
 
   <!-- Main Sidebar Container -->
@@ -104,128 +106,120 @@ else{
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Products List</h3>
+                <h3 class="card-title">Users List</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="product_add.php" type="button" class="btn btn-info float-right"><i class="fas fa-plus">
-                </i> Add New Product</a>
-          
+                <a href="user_add.php" type="button" class="btn btn-info float-right"><i class="fas fa-plus">
+                </i> Add New User</a>
                 <table class="table table-bordered mt-5">
                   <thead>                  
                     <tr>
                       <th>#</th>
                       <th>Name</th>
-                      <th>Description</th>
-                      <th>Category</th>
-                      <th>Qty</th>
-                      <th>Price</th>
+                      <th>Email</th>
+                      <th>Address</th>
+                      <th>Phone</th>
+                      <th>Role</th>
                       <th colspan="2">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     <?php
 
-                        if (!empty($_GET['pageno'])) 
-                        {
-                        $pageno = $_GET['pageno'];
-                        }
-                        else
-                        {
+                      if (!empty($_GET['pageno'])) 
+                      {
+                       $pageno = $_GET['pageno'];
+                      }
+                      else
+                      {
                         $pageno = 1;
-                        }
+                      }
 
-                        $numOfrecs = 5; // number of records in one one page
-                        $offset = ($pageno - 1) * $numOfrecs; // offset algorithm
+                      $numOfrecs = 5; // number of records in one one page
+                      $offset = ($pageno - 1) * $numOfrecs; // offset algorithm
 
-                        if (empty($_POST['search']) && empty($_COOKIE['search'])) 
-                        {
-                        $stmt = $pdo->prepare("SELECT * FROM products ORDER BY id DESC");
+                      if (empty($_POST['search']) && empty($_COOKIE['search'])) 
+                      {
+                        $stmt = $pdo->prepare("SELECT * FROM users ORDER BY id DESC");
                         $stmt->execute();
                         $rawResult = $stmt->fetchAll();
 
                         $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
 
-                        $stmt = $pdo->prepare("SELECT * FROM products ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                        $stmt = $pdo->prepare("SELECT * FROM users ORDER BY id DESC LIMIT $offset,$numOfrecs");
                         $stmt->execute();
                         $result = $stmt->fetchAll();
 
-
+  
                         if ($result) 
                         { 
-                            $i = 1;
-                            foreach ($result as $value) 
-                            { ?>
-                             <?php 
-                               $catstmt = $pdo->prepare("SELECT * FROM categories WHERE id=".$value['category_id']);
-                               $catstmt->execute();
-                               $catResult = $catstmt->fetchAll();
-                            ?>
+                          $i = 1;
+                          foreach ($result as $value) 
+                          { ?>
                             <tr>
                             <td><?php echo $i;?></td>
                             <td><?php echo escape($value['name']) ?></td>
-                            <td><?php echo escape(substr($value['description'],0,50))?>
+                            <td><?php echo escape($value['email']) ?>
+                            <td><?php echo escape($value['address']) ?></td>
+                            <td><?php echo escape($value['phone']) ?>
                             </td>
-                            <td><?php echo escape($catResult[0]['name'])?>
+                            <td>
+                                <?php 
+                                if($value['role'] == 1)
+                                {echo 'Admin';} 
+                                else
+                                {echo 'User'; } ?>
                             </td>
-                            <td><?php echo escape($value['quantity'])?>
-                            </td>
-                            <td><?php echo escape($value['price'])?>
-                            </td>
-
-                            <td><a href="product_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
-                            <a href="product_delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
+                            <td><a href="user_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
+                            <a href="user_delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
                             </tr>
                             <?php    
                             $i++;
-                            }
+                          }
                         }
-                        }
-                        else
-                        {
+                      }
+                      else
+                      {
                         $searchKey = $_POST ? $_POST['search'] : $_COOKIE['search'];
 
-                        $stmt = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
+                        $stmt = $pdo->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
                         $stmt->execute();
                         $rawResult = $stmt->fetchAll();
 
                         $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
 
-                        $stmt = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                        $stmt = $pdo->prepare("SELECT * FROM users WHERE name LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
                         $stmt->execute();
                         $result = $stmt->fetchAll();
-                        
+                       
                         if ($result) 
                         { 
-                            $i = 1;
-                            foreach ($result as $value) 
-                            { ?>
-                            <?php 
-                               $catstmt = $pdo->prepare("SELECT * FROM categories WHERE id=".$value['category_id']);
-                               $catstmt->execute();
-                               $catResult = $catstmt->fetchAll();
-                            ?>
+                          $i = 1;
+                          foreach ($result as $value) 
+                          { ?>
                             <tr>
                             <td><?php echo $i;?></td>
                             <td><?php echo escape($value['name']) ?></td>
-                            <td><?php echo escape(substr($value['description'],0,50)) ?>
+                            <td><?php echo escape($value['email']) ?>
+                            <td><?php echo escape($value['address']) ?></td>
+                            <td><?php echo escape($value['phone']) ?>
                             </td>
-                            <td><?php echo escape($catResult['name'])?>
+                            <td><?php if ($value['role'] === 1) {
+                                echo 'Admin';
+                            } else { echo 'Normal User' ; }?>
                             </td>
-                            <td><?php echo escape($value['quantity'])?>
-                            </td>
-                            <td><?php echo escape($value['price'])?>
-                            </td>
-                            <td><a href="product_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
-                            <a href="product_delete.php?id=<?php echo $values['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
+                            <td><a href="user_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
+                            <a href="user_delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
                             </tr>
                             <?php    
                             $i++;
-                            }
+                          }
                         }
-                        }
-                            
-                        ?>
+                      }
+                          
+                    ?>
+                    
                   </tbody>
                 </table>
                 <br>
@@ -236,24 +230,24 @@ else{
                 <!-- Current page = current page no -->
                 <!-- Last = the last page no -->
                 <nav aria-label="Page navigation example">
-                    <ul class="pagination justify-content-end">
-                        <li class="page-item">
-                        <a class="page-link" href="?pageno=1">First</a>
-                        </li>
-                        <li class="page-item <?php if ($pageno <= 1) {echo 'disabled'; }?>">
-                        <a class="page-link" href="<?php if($pageno <=1) { echo '#'; } else { 
-                            echo "?pageno=".($pageno-1); } ?>"><<</a>
-                        </li>
-                        <li class="page-item"><a class="page-link" href="#"><?php echo $pageno; ?></a>
-                        </li>
-                        <li class="page-item"<?php if ($pageno >= $total_pages) {echo 'disabled'; }?>">
-                        <a class="page-link" href="<?php if($pageno >= $total_pages) { echo '#'; } else { 
-                            echo "?pageno=".($pageno+1); } ?>">>></a>
-                        </li>
-                        <li class="page-item">
-                        <a class="page-link" href="?pageno=<?php echo $total_pages; ?>">Last</a>
-                        </li>
-                    </ul>
+                  <ul class="pagination justify-content-end">
+                    <li class="page-item">
+                      <a class="page-link" href="?pageno=1">First</a>
+                    </li>
+                    <li class="page-item <?php if ($pageno <= 1) {echo 'disabled'; }?>">
+                      <a class="page-link" href="<?php if($pageno <=1) { echo '#'; } else { 
+                        echo "?pageno=".($pageno-1); } ?>"><<</a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#"><?php echo $pageno; ?></a>
+                    </li>
+                    <li class="page-item"<?php if ($pageno >= $total_pages) {echo 'disabled'; }?>">
+                      <a class="page-link" href="<?php if($pageno >= $total_pages) { echo '#'; } else { 
+                        echo "?pageno=".($pageno+1); } ?>">>></a>
+                    </li>
+                    <li class="page-item">
+                      <a class="page-link" href="?pageno=<?php echo $total_pages; ?>">Last</a>
+                    </li>
+                  </ul>
                 </nav>
               </div>
               <!-- /.card-body -->
@@ -280,7 +274,6 @@ else{
   <!-- /.control-sidebar -->
 </div>
 <!-- ./wrapper -->
-
 <!-- jQuery -->
 <script src="plugins/jquery/jquery.min.js"></script>
 <!-- jQuery UI 1.11.4 -->

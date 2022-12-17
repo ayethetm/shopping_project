@@ -13,77 +13,97 @@ if ($_SESSION['role'] != 1) {
 }
 
 
+if ($_POST) 
+{
 
-// validation error prevent
-if ($_POST) {
-  
-  if (empty($_POST['name']) || empty($_POST['description']) || empty($_POST['category_id']) || empty($_POST['quantity']) || empty($_POST['price']) || empty($_FILES['image']['name'])) 
-  {
-    if (empty($_POST['name']))
+    if (empty($_POST['name']) || empty($_POST['description']) || empty($_POST['category_id']) || empty($_POST['quantity']) || empty($_POST['price'])) 
     {
-      $nameError = 'Name cannot be null';
-    }
-    if (empty($_POST['description']))
-    {
-      $descError = 'Description cannot be null';
-    }
-    if (empty($_POST['category_id']))
-    {
-      $catError = 'Category Type cannot be null';
-    }
-    if (empty($_POST['quantity']))
-    {
-      $quantityError = 'Quantity cannot be null';
-    }
-    
-    if (empty($_POST['price']))
-    {
-      $priceError = 'Price cannot be null';
-    }
-    
-    if (empty($_FILES['image']['name']))
-    {
-      $imageError = 'Image cannot be null';
-    }
+      if (empty($_POST['name']))
+      {
+        $nameError = 'Name cannot be null';
+      }
+      if (empty($_POST['description']))
+      {
+        $descError = 'Description cannot be null';
+      }
+      if (empty($_POST['category_id']))
+      {
+        $catError = 'Category Type cannot be null';
+      }
+      if (empty($_POST['quantity']))
+      {
+        $quantityError = 'Quantity cannot be null';
+      }
+      
+      if (empty($_POST['price']))
+      {
+        $priceError = 'Price cannot be null';
+      }
+      
+      
+    //fetch get data by $_GET id
+    $stmt = $pdo->prepare('SELECT * FROM products WHERE id='.$_GET['id']);
+    $stmt->execute();
+    $result = $stmt->fetchAll();
+
+    //to get category name 
+    $product_id = $result[0]['category_id'];
+    $cat_stmt = $pdo->prepare('SELECT name FROM categories WHERE id='.$product_id);
+    $cat_stmt->execute();
+    $cat_result = $cat_stmt->fetchAll();
   }
-  
   else
   {
-   
+    
+   $id = $_POST['id'];
    $name = $_POST['name'];
    $description = $_POST['description'];
    $category_id = $_POST['category_id'];
    $quantity = $_POST['quantity'];
    $price = $_POST['price'];
-   $image = $_FILES['image']['name'];
-   $file = '../images/'.($_FILES['image']['name']); // to save image under images folder
-   $imageType = pathinfo($file,PATHINFO_EXTENSION); // to get image type
-   //to check image type correct or not
-   if ($imageType != 'png' && $imageType != 'jpg' && $imageType != 'jpeg' ) {
-       echo '<script>alert("Image must be png,jpg,jpeg")</script>';
-   }
-   else{
-        move_uploaded_file($_FILES['image']['tmp_name'],$file); // final step to save image
-
+   //user upload new image condition
+   if ($_FILES['image']['name'] != null) 
+   {
+        $image = $_FILES['image']['name'];
+        $file = '../images/'.($_FILES['image']['name']); // to save image under images folder
+        $imageType = pathinfo($file,PATHINFO_EXTENSION); // to get image type
+        //to check image type correct or not
+        if ($imageType != 'png' && $imageType != 'jpg' && $imageType != 'jpeg' ) {
+            echo '<script>alert("Image must be png,jpg,jpeg")</script>';
+        }
+        else
+        {
+            move_uploaded_file($_FILES['image']['tmp_name'],$file); // final step to save image
+    
+            $stmt = $pdo->prepare("UPDATE products SET name='$name',description='$description',category_id='$category_id',quantity='$quantity',price='$price',image='$image' WHERE id='$id' ") ;
+            $result = $stmt->execute();
         
-        $stmt = $pdo->prepare("INSERT INTO products(name,description,category_id,quantity,price,image) VALUES(:name,:description,:category_id,:quantity,:price,:image)");
-        $result = $stmt->execute(
-            array(':name' => $name,
-                 ':description' => $description,
-                  ':category_id' => $category_id,
-                  ':quantity' => $quantity,
-                  ':price' => $price,
-                  ':image' => $image)
-        );
+            if($result)
+            {
+                echo '<script>alert("Successfully updated !");window.location.href="index.php";</script>';
+            }
+        }
+   }
+   //user update data without new image 
+   else 
+   {
+        $stmt = $pdo->prepare("UPDATE products SET name='$name',description='$description',category_id='$category_id',quantity='$quantity',price='$price' WHERE id='$id' ") ;
+        $result = $stmt->execute();
 
         if($result)
         {
-            echo '<script>alert("Successfully created ! ");window.location.href="index.php";</script>';
+            echo '<script>alert("Successfully updated !");window.location.href="index.php";</script>';
         }
    }
-
   }
-   
+}    
+else{
+    
+    //fetch get data by $_GET id
+    $stmt = $pdo->prepare('SELECT * FROM products WHERE id='.$_GET['id']);
+    $stmt->execute();
+    $result = $stmt->fetchAll();
+  
 }
 
 ?>
@@ -150,7 +170,7 @@ if ($_POST) {
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="index.php" class="brand-link">
       <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
            style="opacity: .8">
       <span class="brand-text font-weight-light">Neko Shop</span>
@@ -226,49 +246,60 @@ if ($_POST) {
         <div class="row">
           <div class="col-md-12">
             <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">New Product Form</h3>
-              </div>
+                <div class="card-header">
+                    <h3 class="card-title">Edit Product Data</h3>
+                </div>
               <div class="card-body">
-                <form method="POST" action="product_add.php" enctype="multipart/form-data">
-                  <!-- token hidden  -->
-                  <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; ?>">
+                <form method="POST" action="" enctype="multipart/form-data">
+                    <!-- token hidden  -->
+                    <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; ?>">
+                    <input type="hidden" name="id" value="<?php echo escape($result[0]['id']) ?>">
                     <div class="form-group mb-3">
                         <label for="name">Name</label><p style="color:red;"><?php echo empty($nameError)? '' : '*'.$nameError ?></p>
-                        <input type="text" class="form-control" name="name">
+                        <input type="text" class="form-control" name="name" value="<?php echo escape($result[0]['name']) ?>">
                     </div>
                     <div class="form-group">
                         <label for="description">Description</label><p style="color:red;"><?php echo empty($descError)? '' : '*'.$descError ?></p>
-                        <textarea class="form-control" id="" rows="3" name="description"></textarea>
+                        <textarea class="form-control" id="" rows="3" name="description" value="<?php echo escape($result[0]['description'])  
+                        ?>" ><?php echo escape($result[0]['description']) ?></textarea>
                     </div>
                     <div class="form-group mb-3">
                     <!-- category type -->
                         <?php
-                            $cat_stmt = $pdo->prepare('SELECT * FROM categories');
-                            $cat_stmt->execute();
-                            $cat_result = $cat_stmt->fetchAll();
+                            $cat_stmts = $pdo->prepare('SELECT * FROM categories');
+                            $cat_stmts->execute();
+                            $cat_results = $cat_stmts->fetchAll();
                         ?>
+                        <!-- to get category name  -->
+                        <?php
+                        $product_id = $result[0]['category_id'];
+                        $cat_stmt = $pdo->prepare('SELECT name FROM categories WHERE id='.$product_id);
+                        $cat_stmt->execute();
+                        $cat_result = $cat_stmt->fetchAll(); ?>
 
                         <label for="categoryType">Category Type</label>
                         <p style="color:red;"><?php echo empty($catError)? '' : '*'.$catError ?></p>
-                        <select id="category_id" class="form-control" name="category_id">
+                        <select id="category_id" class="form-control" name="category_id" >
+                            <option value="<?php echo ($result[0]['category_id']) ?>" selected><?php echo escape($cat_result[0]['name']) ?> </option>
                             <option value="">Choose Category</option>
                             <?php
-                                foreach ($cat_result as $value) { ?>
+                                foreach ($cat_results as $value) { ?>
                                     <option value="<?php echo $value['id']; ?>"><?php echo $value['name']; ?></option>
                             <?php } ?>
                         </select>
                     </div>
                     <div class="form-group">
                         <label for="quantity">Quantity</label><p style="color:red;"><?php echo empty($quantityError)? '' : '*'.$quantityError ?></p>
-                        <input type="number" class="form-control" name="quantity">
+                        <input type="number" class="form-control" name="quantity" value="<?php echo escape($result[0]['quantity']) ?>">
                     </div>
                     <div class="form-group">
                         <label for="price">Price</label><p style="color:red;"><?php echo empty($priceError)? '' : '*'.$priceError ?></p>
-                        <input type="number" class="form-control" name="price">
+                        <input type="number" class="form-control" name="price" value="<?php echo escape($result[0]['price']) ?>">
                     </div>
                     <div class="form-group">
-                        <label for="image">Upload image</label><p style="color:red;"><?php echo empty($imageError)? '' : '*'.$imageError ?></p>
+                        <label for="image">Upload image</label><br>
+                        <image src="../images/<?php echo escape($result[0]['image']) ?>" width="50px" height="50px" />
+                        <br><br>
                         <input type="file" name="image">
                     </div>
                     <button type="submit" class="btn btn-success mt-3">Submit</button>
