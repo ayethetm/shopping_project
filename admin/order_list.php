@@ -10,15 +10,12 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
 if ($_SESSION['role'] != 1) {
   header('Location:login.php');
 }
-if ($_POST) {
-  setcookie('search',$_POST['search'],time() + (86400 * 30), "/");
-}
-else{
-  if (empty($_GET['pageno'])) {
+
+if (empty($_GET['pageno'])) {
     unset($_COOKIE['search']);
     setcookie('search',null,-1,'/');
   }
-}
+
 
 ?>
 <?php include('header.php'); ?>
@@ -108,7 +105,7 @@ else{
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Categories List</h3>
+                <h3 class="card-title">Orders List</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -119,8 +116,9 @@ else{
                   <thead>                  
                     <tr>
                       <th>#</th>
-                      <th>Name</th>
-                      <th>Description</th>
+                      <th>User</th>
+                      <th>Total Price</th>
+                      <th>Order Date(Y/m/d)</th>
                       <th colspan="2">Actions</th>
                     </tr>
                   </thead>
@@ -139,71 +137,43 @@ else{
                         $numOfrecs = 5; // number of records in one one page
                         $offset = ($pageno - 1) * $numOfrecs; // offset algorithm
 
-                        if (empty($_POST['search']) && empty($_COOKIE['search'])) 
-                        {
-                        $stmt = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC");
-                        $stmt->execute();
-                        $rawResult = $stmt->fetchAll();
-
-                        $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
-
-                        $stmt = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC LIMIT $offset,$numOfrecs");
-                        $stmt->execute();
-                        $result = $stmt->fetchAll();
-
-
-                        if ($result) 
-                        { 
-                            $i = 1;
-                            foreach ($result as $value) 
-                            { ?>
-                            <tr>
-                            <td><?php echo $i;?></td>
-                            <td><?php echo escape($value['name']) ?></td>
-                            <td><?php echo escape(substr($value['description'],0,50))?>
-                            </td>
-                            <td><a href="cat_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
-                            <a href="cat_delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
-                            </tr>
-                            <?php    
-                            $i++;
-                            }
-                        }
-                        }
-                        else
-                        {
-                        $searchKey = $_POST ? $_POST['search'] : $_COOKIE['search'];
-
-                        $stmt = $pdo->prepare("SELECT * FROM categories WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
-                        $stmt->execute();
-                        $rawResult = $stmt->fetchAll();
-
-                        $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
-
-                        $stmt = $pdo->prepare("SELECT * FROM categories WHERE name LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
-                        $stmt->execute();
-                        $result = $stmt->fetchAll();
                         
+                        $stmt = $pdo->prepare("SELECT * FROM sale_orders ORDER BY id DESC");
+                        $stmt->execute();
+                        $rawResult = $stmt->fetchAll();
+
+                        $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
+
+                        $stmt = $pdo->prepare("SELECT * FROM sale_orders ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                        $stmt->execute();
+                        $result = $stmt->fetchAll();
+
+
                         if ($result) 
                         { 
                             $i = 1;
                             foreach ($result as $value) 
                             { ?>
+                            <?php 
+                               $userstmt = $pdo->prepare("SELECT * FROM users WHERE id=".$value['user_id']);
+                               $userstmt->execute();
+                               $userResult = $userstmt->fetchAll();
+                            ?>
                             <tr>
                             <td><?php echo $i;?></td>
-                            <td><?php echo escape($value['name']) ?></td>
-                            <td><?php echo escape(substr($value['description'],0,50)) ?>
+                            <td><?php echo escape($userResult[0]['name'])?>
+                            <td><?php echo escape($value['total_price']) ?></td>
+                            <td><?php echo escape(date('Y-m-d',strtotime($value['order_date']))) ?></td>
                             </td>
-                            <td><a href="cat_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
-                            <a href="cat_delete.php?id=<?php echo $values['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
+                            <td><a href="order_detail.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning"><i class="fas fa-eye"></i> View</a>
+                            </td>
                             </tr>
                             <?php    
                             $i++;
                             }
                         }
-                        }
-                            
-                        ?>
+                         
+                    ?>
                   </tbody>
                 </table>
                 <br>

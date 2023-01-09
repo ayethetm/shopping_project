@@ -53,7 +53,7 @@ else{
                with font-awesome or any other icon font library -->
           <li class="nav-item">
             <a href="index.php" class="nav-link">
-              <i class="nav-icon fas fa-th"></i>
+              <i class="nav-icon fas fa-tag"></i>
               <p>
                 Products 
               </p>
@@ -61,7 +61,7 @@ else{
           </li>
           <li class="nav-item">
             <a href="categories.php" class="nav-link">
-              <i class="nav-icon fas fa-list"></i>
+              <i class="nav-icon fas fa-th"></i>
               <p>
                 Categories 
               </p>
@@ -75,7 +75,14 @@ else{
               </p>
             </a>
           </li>
-          
+          <li class="nav-item">
+            <a href="order_list.php" class="nav-link">
+              <i class="nav-icon fas fa-list-ol"></i>
+              <p>
+                Orders List
+              </p>
+            </a>
+          </li>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

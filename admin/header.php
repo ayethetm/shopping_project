@@ -46,8 +46,10 @@
         $linkarray = explode('/',$link); // change into array 
         $page = end($linkarray);
     ?>
-    
-      <form class="form-inline ml-3" method="POST" 
+
+    <?php 
+      if (($page != 'order_list.php') && ($page != 'order_detail.php')){ ?>
+         <form class="form-inline ml-3" method="POST" 
       <?php if ($page == 'index.php') : ?> 
         action="index.php"
       <?php elseif ($page == 'categories.php'):?>  
@@ -65,6 +67,8 @@
           </div>
         </div>
       </form>
+      <?php } ?>
+    
       <div class="container">
         <a href="logout.php" type="button" class="ml-auto btn btn-danger">Logout</a>
       </div>

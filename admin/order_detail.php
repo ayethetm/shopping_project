@@ -10,15 +10,12 @@ if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
 if ($_SESSION['role'] != 1) {
   header('Location:login.php');
 }
-if ($_POST) {
-  setcookie('search',$_POST['search'],time() + (86400 * 30), "/");
-}
-else{
-  if (empty($_GET['pageno'])) {
+if (empty($_GET['pageno'])) {
     unset($_COOKIE['search']);
     setcookie('search',null,-1,'/');
   }
-}
+
+
 
 ?>
 <?php include('header.php'); ?>
@@ -108,20 +105,20 @@ else{
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Categories List</h3>
+                <h3 class="card-title">Orders Detail</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="cat_add.php" type="button" class="btn btn-info float-right"><i class="fas fa-plus">
-                </i> Add New Category</a>
+                <a href="order_list.php" type="button" class="btn btn-info float-right"><i class="fas fa-arrow-left">
+                </i> Back to order list</a>
           
                 <table class="table table-bordered mt-5">
                   <thead>                  
                     <tr>
                       <th>#</th>
-                      <th>Name</th>
-                      <th>Description</th>
-                      <th colspan="2">Actions</th>
+                      <th>Product</th>
+                      <th>Quantity</th>
+                      <th>Order Date(Y/m/d)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -139,71 +136,42 @@ else{
                         $numOfrecs = 5; // number of records in one one page
                         $offset = ($pageno - 1) * $numOfrecs; // offset algorithm
 
-                        if (empty($_POST['search']) && empty($_COOKIE['search'])) 
-                        {
-                        $stmt = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC");
-                        $stmt->execute();
-                        $rawResult = $stmt->fetchAll();
-
-                        $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
-
-                        $stmt = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC LIMIT $offset,$numOfrecs");
-                        $stmt->execute();
-                        $result = $stmt->fetchAll();
-
-
-                        if ($result) 
-                        { 
-                            $i = 1;
-                            foreach ($result as $value) 
-                            { ?>
-                            <tr>
-                            <td><?php echo $i;?></td>
-                            <td><?php echo escape($value['name']) ?></td>
-                            <td><?php echo escape(substr($value['description'],0,50))?>
-                            </td>
-                            <td><a href="cat_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
-                            <a href="cat_delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
-                            </tr>
-                            <?php    
-                            $i++;
-                            }
-                        }
-                        }
-                        else
-                        {
-                        $searchKey = $_POST ? $_POST['search'] : $_COOKIE['search'];
-
-                        $stmt = $pdo->prepare("SELECT * FROM categories WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
-                        $stmt->execute();
-                        $rawResult = $stmt->fetchAll();
-
-                        $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
-
-                        $stmt = $pdo->prepare("SELECT * FROM categories WHERE name LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
-                        $stmt->execute();
-                        $result = $stmt->fetchAll();
                         
+                        $stmt = $pdo->prepare("SELECT * FROM sale_order_detail ORDER BY id DESC");
+                        $stmt->execute();
+                        $rawResult = $stmt->fetchAll();
+
+                        $total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
+
+                        $stmt = $pdo->prepare("SELECT * FROM sale_order_detail ORDER BY id DESC LIMIT $offset,$numOfrecs");
+                        $stmt->execute();
+                        $result = $stmt->fetchAll();
+
+
                         if ($result) 
                         { 
                             $i = 1;
                             foreach ($result as $value) 
                             { ?>
+                            <?php 
+                            //    to get product info
+                               $productstmt = $pdo->prepare("SELECT * FROM products WHERE id=".$value['product_id']);
+                               $productstmt->execute();
+                               $productResult = $productstmt->fetchAll();
+                            ?>
                             <tr>
                             <td><?php echo $i;?></td>
-                            <td><?php echo escape($value['name']) ?></td>
-                            <td><?php echo escape(substr($value['description'],0,50)) ?>
+                            <td><?php echo escape($productResult[0]['name'])?>
+                            <td><?php echo escape($value['quantity']) ?></td>
+                            <td><?php echo escape(date('Y-m-d',strtotime($value['order_date']))) ?></td>
                             </td>
-                            <td><a href="cat_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
-                            <a href="cat_delete.php?id=<?php echo $values['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
                             </tr>
                             <?php    
                             $i++;
                             }
                         }
-                        }
-                            
-                        ?>
+                         
+                    ?>
                   </tbody>
                 </table>
                 <br>
