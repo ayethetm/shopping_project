@@ -92,6 +92,9 @@ if (empty($_GET['pageno'])) {
     <div class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Dashboard</h1>
+          </div>
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
@@ -109,10 +112,7 @@ if (empty($_GET['pageno'])) {
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="cat_add.php" type="button" class="btn btn-info float-right"><i class="fas fa-plus">
-                </i> Add New Category</a>
-          
-                <table class="table table-bordered mt-5">
+                <table class="table table-bordered mt-3">
                   <thead>                  
                     <tr>
                       <th>#</th>
@@ -165,7 +165,7 @@ if (empty($_GET['pageno'])) {
                             <td><?php echo escape($value['total_price']) ?></td>
                             <td><?php echo escape(date('Y-m-d',strtotime($value['order_date']))) ?></td>
                             </td>
-                            <td><a href="order_detail.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning"><i class="fas fa-eye"></i> View</a>
+                            <td><a href="order_detail.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-primary"><i class="fas fa-eye"></i> View</a>
                             </td>
                             </tr>
                             <?php    

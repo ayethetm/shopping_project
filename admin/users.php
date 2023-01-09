@@ -178,7 +178,7 @@ else{
                                 else
                                 {echo 'User'; } ?>
                             </td>
-                            <td><a href="user_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
+                            <td><a href="user_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning"><i class="fas fa-pen"></i> Edit</a>
                             <a href="user_delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
                             </tr>
                             <?php    

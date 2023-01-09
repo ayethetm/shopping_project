@@ -95,6 +95,9 @@ else{
     <div class="content-header">
       <div class="container-fluid">
         <div class="row mb-2">
+        <div class="col-sm-6">
+            <h1 class="m-0 text-dark">Dashboard</h1>
+          </div>
         </div><!-- /.row -->
       </div><!-- /.container-fluid -->
     </div>
@@ -162,7 +165,7 @@ else{
                             <td><?php echo escape($value['name']) ?></td>
                             <td><?php echo escape(substr($value['description'],0,50))?>
                             </td>
-                            <td><a href="cat_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning ml-3"><i class="fas fa-pen"></i> Edit</a>
+                            <td><a href="cat_edit.php?id=<?php echo $value['id'];?>" type="button" class="btn btn-warning"><i class="fas fa-pen"></i> Edit</a>
                             <a href="cat_delete.php?id=<?php echo $value['id'];?>" type="button" onclick="return confirm('Are you sure to delete?')" class="btn btn-danger"><i class="fas fa-trash"></i> Delete</a></td>
                             </tr>
                             <?php    
