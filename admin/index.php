@@ -210,7 +210,7 @@ else{
                             <td><?php echo escape($value['name']) ?></td>
                             <td><?php echo escape(substr($value['description'],0,50)) ?>
                             </td>
-                            <td><?php echo escape($catResult['name'])?>
+                            <td><?php echo escape($catResult[0]['name'])?>
                             </td>
                             <td><?php echo escape($value['quantity'])?>
                             </td>

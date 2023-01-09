@@ -47,7 +47,14 @@
         $page = end($linkarray);
     ?>
     
-      <form class="form-inline ml-3" method="POST" action="<?php echo $page == 'index.php' ? 'index.php' : 'categories.php'; ?>">
+      <form class="form-inline ml-3" method="POST" 
+      <?php if ($page == 'index.php') : ?> 
+        action="index.php"
+      <?php elseif ($page == 'categories.php'):?>  
+        action="categories.php"
+      <?php elseif ($page == 'users.php'): ?>  
+      action="users.php"
+      <?php endif; ?>>
       <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; ?>">
         <div class="input-group input-group-sm">
           <input name="search" class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
