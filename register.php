@@ -1,3 +1,73 @@
+<?php
+
+session_start();
+require 'config/config.php';
+require 'config/common.php';
+
+if ($_POST) {
+    if (empty($_POST['name']) || empty($_POST['email']) || empty($_POST['phone']) || 
+    empty($_POST['address']) || empty($_POST['password']) || strlen($_POST['password']) < 4) 
+    {
+        if (empty($_POST['name'])) 
+        {
+            $nameError = "Name cannot be empty";
+        }
+        if (empty($_POST['email'])) 
+        {
+            $emailError = "Email cannot be empty";
+        }
+        if (empty($_POST['phone'])) 
+        {
+            $phoneError = "Phone cannot be empty";
+        }
+        if (empty($_POST['address'])) 
+        {
+            $addressError = "Address cannot be empty";
+        }
+        if (empty($_POST['password'])) 
+        {
+            $passwordError = "Password cannot be empty";
+        }
+        if (strlen($_POST['password']) < 4) 
+        {
+            $passwordError = "Password length must be at least 4";
+        }
+
+    }
+    else
+    {
+        $name = $_POST['name'];
+        $email = $_POST['email'];
+        $phone = $_POST['phone'];
+        $address = $_POST['address'];
+        $password = password_hash($_POST['password'],PASSWORD_DEFAULT); //pwd hashing
+
+        // to check duplicate user by email
+        $stmt = $pdo->prepare("SELECT * FROM users WHERE email=:email");
+        //bind value
+        $stmt->bindValue(':email',$email);
+        $stmt->execute();
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($user) 
+        {
+            echo "<script>alert('User is already exists');</script>";
+        }
+        else
+        {
+            $stmt = $pdo->prepare("INSERT INTO users(name,email,phone,address,password) VALUES(:name,:email,:phone,:address,:password)");
+            $result = $stmt->execute(array(':name'=>$name,':email'=>$email,':phone'=>$phone,':address'=>$address,':password'=>$password));
+
+            if ($result) 
+            {
+                echo "<script>alert('Registration successful!');window.location.href='login.php';
+                </script>";
+            }
+        }
+    }
+}
+
+?>
 <!DOCTYPE html>
 <html lang="zxx" class="no-js">
 
@@ -47,57 +117,12 @@
 					</button>
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
-						<!-- <ul class="nav navbar-nav menu_nav ml-auto">
-							<li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-							<li class="nav-item submenu dropdown">
-								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-								 aria-expanded="false">Shop</a>
-								<ul class="dropdown-menu">
-									<li class="nav-item"><a class="nav-link" href="category.html">Shop Category</a></li>
-									<li class="nav-item"><a class="nav-link" href="single-product.html">Product Details</a></li>
-									<li class="nav-item"><a class="nav-link" href="checkout.html">Product Checkout</a></li>
-									<li class="nav-item"><a class="nav-link" href="cart.html">Shopping Cart</a></li>
-									<li class="nav-item"><a class="nav-link" href="confirmation.html">Confirmation</a></li>
-								</ul>
-							</li>
-							<li class="nav-item submenu dropdown">
-								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-								 aria-expanded="false">Blog</a>
-								<ul class="dropdown-menu">
-									<li class="nav-item"><a class="nav-link" href="blog.html">Blog</a></li>
-									<li class="nav-item"><a class="nav-link" href="single-blog.html">Blog Details</a></li>
-								</ul>
-							</li>
-							<li class="nav-item submenu dropdown active">
-								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-								 aria-expanded="false">Pages</a>
-								<ul class="dropdown-menu">
-									<li class="nav-item active"><a class="nav-link" href="login.html">Login</a></li>
-									<li class="nav-item"><a class="nav-link" href="tracking.html">Tracking</a></li>
-									<li class="nav-item"><a class="nav-link" href="elements.html">Elements</a></li>
-								</ul>
-							</li>
-							<li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-						</ul>
-						<ul class="nav navbar-nav navbar-right">
-							<li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
-							<li class="nav-item">
-								<button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
-							</li>
-						</ul> -->
+
 					</div>
 				</div>
 			</nav>
 		</div>
-		<!-- <div class="search_input" id="search_input_box">
-			<div class="container">
-				<form class="d-flex justify-content-between">
-					<input type="text" class="form-control" id="search_input" placeholder="Search Here">
-					<button type="submit" class="btn"></button>
-					<span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
-				</form>
-			</div>
-		</div> -->
+		
 	</header>
 	<!-- End Header Area -->
 
@@ -121,34 +146,43 @@
 	<section class="login_box_area section_gap">
 		<div class="container">
 			<div class="row">
-				<!-- <div class="col-lg-6">
-					<div class="login_box_img">
-						<img class="img-fluid" src="img/login.jpg" alt="">
-						<div class="hover">
-							<h4>New to our website?</h4>
-							<p>There are advances being made in science and technology everyday, and a good example of this is the</p>
-							<a class="primary-btn" href="register.php">Create an Account</a>
-						</div>
-					</div>
-				</div> -->
+				
 				<div class="col-lg-12">
-					<div class="login_form_inner">
+					<div class="login_form_inner" style="padding-top:100px;">
 						<h3>Register to connect with Us</h3>
 						<form class="row login_form" action="register.php" method="post" id="contactForm" novalidate="novalidate">
+                        <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; 
+                        ?>">
                             <div class="col-md-12 form-group">
-								<input type="name" class="form-control" id="name" name="name" placeholder="Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Name'">
+								<input type="name" class="form-control" id="name" name="name" 
+                                style="<?php echo empty($nameError) ? '' : 'border:1px solid red';?>"
+                                placeholder="Name" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Name'">
+                                <p style="text-align:left;color:red;"><?php echo empty($nameError) ? '' : $nameError ?></p>
 							</div>
 							<div class="col-md-12 form-group">
-								<input type="email" class="form-control" id="email" name="email" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
+								<input type="email" class="form-control" id="email" name="email" 
+                                style="<?php echo empty($emailError) ? '' : 'border:1px solid red';?>"
+                                placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
+                                <p style="text-align:left;color:red;"><?php echo empty($emailError) ? '' : $emailError ?></p>
 							</div>
                             <div class="col-md-12 form-group">
-								<input type="phone" class="form-control" id="phone" name="phone" placeholder="Phone" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Phone'">
+								<input type="phone" class="form-control" id="phone" name="phone" 
+                                style="<?php echo empty($phoneError) ? '' : 'border:1px solid red';?>"
+                                placeholder="Phone" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Phone'">
+                                <p style="text-align:left;color:red;"><?php echo empty($phoneError) ? '' : $phoneError ?></p>
 							</div>
                             <div class="col-md-12 form-group">
-								<input type="address" class="form-control" id="address" name="address" placeholder="Address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Address'">
+								<input type="address" class="form-control" id="address" 
+                                name="address" 
+                                style="<?php echo empty($addressError) ? '' : 'border:1px solid red';?>"
+                                placeholder="Address" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Address'">
+                                <p style="text-align:left;color:red;"><?php echo empty($addressError) ? '' : $addressError ?></p>
 							</div>
 							<div class="col-md-12 form-group">
-								<input type="text" class="form-control" id="password" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+								<input type="password" class="form-control" id="password" name="password" 
+                                style="<?php echo empty($passwordError) ? '' : 'border:1px solid red';?>"
+                                placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+                                <p style="text-align:left;color:red;"><?php echo empty($passwordError) ? '' : $passwordError ?></p>
 							</div>
 							<!-- <div class="col-md-12 form-group">
 								<div class="creat_account">

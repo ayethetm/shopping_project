@@ -1,3 +1,38 @@
+<?php
+
+session_start();
+require 'config/config.php';
+require 'config/common.php';
+
+if ($_POST) {
+    
+        $email = $_POST['email'];
+		$password = $_POST['password'];
+
+		//get user data with post email
+		$stmt = $pdo->prepare("SELECT * FROM users WHERE email=:email"); 
+		$stmt->bindValue(':email',$email);
+		$stmt->execute();
+		$result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+		if ($result) 
+		{
+			if (password_verify($password,$result['password'])) 
+			{
+				$_SESSION['user_id'] = $result['id'];
+				$_SESSION['username'] = $result['name'];
+				$_SESSION['logged_in'] = time();
+				//redirect to home page
+				header('Location:index.php');
+			}
+		}
+        
+        echo "<script>alert('Incorrect credentials!');</script>";
+    
+}
+
+
+?>
 <!DOCTYPE html>
 <html lang="zxx" class="no-js">
 
@@ -121,25 +156,23 @@
 	<section class="login_box_area section_gap">
 		<div class="container">
 			<div class="row">
-				<div class="col-lg-6">
-					<div class="login_box_img">
-						<img class="img-fluid" src="img/login.jpg" alt="">
-						<div class="hover">
-							<h4>New to our website?</h4>
-							<p>There are advances being made in science and technology everyday, and a good example of this is the</p>
-							<a class="primary-btn" href="register.php">Create an Account</a>
-						</div>
-					</div>
-				</div>
-				<div class="col-lg-6">
-					<div class="login_form_inner">
+				
+				<div class="col-lg-12">
+					<div class="login_form_inner" style="padding-top:50px;">
 						<h3>Log in to your account</h3>
 						<form class="row login_form" action="" method="post" id="contactForm" novalidate="novalidate">
+						<input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; 
+                        ?>">
 							<div class="col-md-12 form-group">
-								<input type="email" class="form-control" id="email" name="email" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
+								<input type="email" class="form-control" id="email" name="email" 
+								style="<?php echo empty($emailError) ? '' : 'border:1px solid red';
+								?>" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
+								 <p style="text-align:left;color:red;"><?php echo empty($emailError) ? '' : $emailError ?></p>
 							</div>
 							<div class="col-md-12 form-group">
-								<input type="text" class="form-control" id="password" name="password" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+								<input type="password" class="form-control" id="password" 
+								name="password" style="<?php echo empty($passwordError) ? '' : 'border:1px solid red';?>" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
+								<p style="text-align:left;color:red;"><?php echo empty($passwordError) ? '' : $passwordError ?></p>
 							</div>
 							<!-- <div class="col-md-12 form-group">
 								<div class="creat_account">
@@ -149,9 +182,11 @@
 							</div> -->
 							<div class="col-md-12 form-group">
 								<button type="submit" value="submit" class="primary-btn">Log In</button>
-								
+								<a class="text-primary" href="register.php">Not a member? Create an account</a>
 							</div>
+							
 						</form>
+						
 					</div>
 				</div>
 			</div>
