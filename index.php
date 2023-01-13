@@ -70,8 +70,8 @@
 									<div class="card h-100" style="margin-top:0px;margin-bottom:20px;padding: 16px;text-align: left;">
 										<img src="images/<?php echo escape($value['image']); ?>" alt="cat food image" style="height:160px;width:200px;">
 										<div class="card-body p-0">
-											<h5 class="card-title"><?php echo escape($value['name']) ?>
-											</h5>
+											<a href="product_detail.php?id=<?php echo $value['id'] ?>"><h5 class="card-title"><?php echo escape($value['name']) ?>
+											</h5></a>
 											<p style="small text-muted" class="card-text"><?php echo escape(number_format($value['price'])) ?> MMK</p>
 											<button class="btn btn-sm" style="background-color:#ff8507;color:white;">Add to cart  <span class="ti-bag"></span></button>
 										</div>
