@@ -15,15 +15,33 @@
 
 		if (empty($_POST['search']) && empty($_COOKIE['search'])) 
 		{
-			$stmt = $pdo->prepare("SELECT * FROM products ORDER BY id DESC");
-			$stmt->execute();
-			$rawResult = $stmt->fetchAll();
+			// browse products by category name
+			if (!empty($_GET['category']))
+			{
+				//get category id
+				$category_id = $_GET['category'];
+				$stmt = $pdo->prepare("SELECT * FROM products WHERE category_id=$category_id ORDER BY id DESC");
+				$stmt->execute();
+				$rawResult = $stmt->fetchAll();
 
-			$total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
+				$total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
 
-			$stmt = $pdo->prepare("SELECT * FROM products ORDER BY id DESC LIMIT $offset,$numOfrecs");
-			$stmt->execute();
-			$result = $stmt->fetchAll();
+				$stmt = $pdo->prepare("SELECT * FROM products WHERE category_id=$category_id ORDER BY id DESC LIMIT $offset,$numOfrecs");
+				$stmt->execute();
+				$result = $stmt->fetchAll();
+
+			}
+			else{
+				$stmt = $pdo->prepare("SELECT * FROM products ORDER BY id DESC");
+				$stmt->execute();
+				$rawResult = $stmt->fetchAll();
+
+				$total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
+
+				$stmt = $pdo->prepare("SELECT * FROM products ORDER BY id DESC LIMIT $offset,$numOfrecs");
+				$stmt->execute();
+				$result = $stmt->fetchAll();
+			}
 		}
 		else
 		{
@@ -42,22 +60,34 @@
 
 	?>
 	
-		<!-- <div class="filter-bar d-flex flex-wrap align-items-center">
-			<div class="pagination">
-            <li class="page-item <?php if ($pageno <= 1) {echo 'disabled'; }?>">
-                <a class="page-link" href="<?php if($pageno <=1) { echo '#'; } else { 
-                echo "?pageno=".($pageno-1); } ?>"><i class="fa fa-long-arrow-left"></i></a>
-            </li>
-            <li class="page-item">
-				<a class="page-link active" href="#"><?php echo $pageno; ?></a>
-            </li>
-            <li class="page-item <?php if ($pageno >= $total_pages) {echo 'disabled'; }?>">
-                <a class="page-link" href="<?php if($pageno >= $total_pages) { echo '#'; } else { 
-                echo "?pageno=".($pageno+1); } ?>"><i class="fa fa-long-arrow-right"></i></a>
-            </li>
-		</div> -->
-	<!-- </div> -->
-		
+	<div class="container">
+		<div class="row">
+			<div class="col-xl-3 col-lg-4 col-md-5">
+				<div class="sidebar-categories">
+					<div class="head">Browse Categories</div>
+					<ul class="main-categories">
+					<?php
+						$catstmt = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC");
+						$catstmt->execute();
+						$catresult = $catstmt->fetchAll();
+
+						if ($result) {
+							foreach ($catresult as $key => $value) { ?>
+								<li class="main-nav-list"><a href="index.php?category=<?php echo $value['id']; ?>" aria-expanded="false" aria-controls="fruitsVegetable"><span
+								 class="lnr lnr-arrow-right"></span><?php echo escape($value['name']) ?>
+								 <!-- <span class="number">(53)</span> -->
+								</a>
+						</li>
+					<?php		
+						}
+					}
+					?>
+						
+					</ul>
+				</div>
+			</div>
+			
+				
 		<!-- Start Products -->
 		<div class="col-xl-9 col-lg-8 col-md-7">
 				<section class="lattest-product-area pb-40 category-list">

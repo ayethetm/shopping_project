@@ -165,7 +165,7 @@ if ($_POST) {
 			<div class="row">
 				
 				<div class="col-lg-12">
-					<div class="login_form_inner" style="padding-top:100px;">
+					<div class="login_form_inner" style="padding-top:50px;">
 						<h3>Register to connect with Us</h3>
 						<form class="row login_form" action="register.php" method="post" id="contactForm" novalidate="novalidate">
                         <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; 

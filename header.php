@@ -101,31 +101,4 @@ require 'config/common.php';
 		</div>
 	</section>
 	<!-- End Banner Area -->
-	<div class="container">
-		<div class="row">
-			<div class="col-xl-3 col-lg-4 col-md-5">
-				<div class="sidebar-categories">
-					<div class="head">Browse Categories</div>
-					<ul class="main-categories">
-					<?php
-						$stmt = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC");
-						$stmt->execute();
-						$result = $stmt->fetchAll();
-
-						if ($result) {
-							foreach ($result as $key => $value) { ?>
-								<li class="main-nav-list"><a data-toggle="collapse" href="#fruitsVegetable" aria-expanded="false" aria-controls="fruitsVegetable"><span
-								 class="lnr lnr-arrow-right"></span><?php echo escape($value['name']) ?>
-								 <!-- <span class="number">(53)</span> -->
-								</a>
-						</li>
-					<?php		
-						}
-					}
-					?>
-						
-					</ul>
-				</div>
-			</div>
-			
-				
+	

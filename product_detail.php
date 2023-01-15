@@ -10,6 +10,32 @@
   $cat_stmt->execute();
   $cat_result = $cat_stmt->fetchAll();
 ?>
+<div class="container">
+		<div class="row">
+			<div class="col-xl-3 col-lg-4 col-md-5">
+				<div class="sidebar-categories">
+					<div class="head">Browse Categories</div>
+					<ul class="main-categories">
+					<?php
+						$catstmt = $pdo->prepare("SELECT * FROM categories ORDER BY id DESC");
+						$catstmt->execute();
+						$catresult = $catstmt->fetchAll();
+
+						if ($result) {
+							foreach ($catresult as $key => $value) { ?>
+								<li class="main-nav-list"><a href="index.php?category=<?php echo $value['id']; ?>" aria-expanded="false" aria-controls="fruitsVegetable"><span
+								 class="lnr lnr-arrow-right"></span><?php echo escape($value['name']) ?>
+								 <!-- <span class="number">(53)</span> -->
+								</a>
+						</li>
+					<?php		
+						}
+					}
+					?>
+						
+					</ul>
+				</div>
+			</div>
 <!--================Single Product Area =================-->
 <div class="col-xl-9 col-lg-8 col-md-7">
 <div class="product_image_area p-0 mt-3">
