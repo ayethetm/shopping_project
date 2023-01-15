@@ -87,6 +87,7 @@ if ($_POST)
    //user update data without new image 
    else 
    {
+    
         $stmt = $pdo->prepare("UPDATE products SET name='$name',description='$description',category_id='$category_id',quantity='$quantity',price='$price' WHERE id='$id' ") ;
         $result = $stmt->execute();
 

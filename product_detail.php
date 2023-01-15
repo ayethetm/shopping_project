@@ -12,7 +12,7 @@
 ?>
 <!--================Single Product Area =================-->
 <div class="col-xl-9 col-lg-8 col-md-7">
-<div class="product_image_area p-0">
+<div class="product_image_area p-0 mt-3">
   <div class="container">
     <div class="row s_product_inner">
       <div class="col-lg-4">

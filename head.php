@@ -1,38 +1,3 @@
-<?php
-
-session_start();
-require 'config/config.php';
-require 'config/common.php';
-
-if ($_POST) {
-    
-        $email = $_POST['email'];
-		$password = $_POST['password'];
-
-		//get user data with post email
-		$stmt = $pdo->prepare("SELECT * FROM users WHERE email=:email"); 
-		$stmt->bindValue(':email',$email);
-		$stmt->execute();
-		$result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-		if ($result) 
-		{
-			if (password_verify($password,$result['password'])) 
-			{
-				$_SESSION['user_id'] = $result['id'];
-				$_SESSION['username'] = $result['name'];
-				$_SESSION['logged_in'] = time();
-				//redirect to home page
-				header('Location:index.php');
-			}
-		}
-        
-        echo "<script>alert('Incorrect credentials!');</script>";
-    
-}
-
-
-?>
 <!DOCTYPE html>
 <html lang="zxx" class="no-js">
 
@@ -53,19 +18,19 @@ if ($_POST) {
 	<title>Neko Shop</title>
 
 	<!--
-		CSS
-		============================================= -->
+            CSS
+            ============================================= -->
 	<link rel="stylesheet" href="css/linearicons.css">
 	<link rel="stylesheet" href="css/owl.carousel.css">
-	<link rel="stylesheet" href="css/themify-icons.css">
 	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<link rel="stylesheet" href="css/themify-icons.css">
 	<link rel="stylesheet" href="css/nice-select.css">
 	<link rel="stylesheet" href="css/nouislider.min.css">
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/main.css">
 </head>
 
-<body>
+<body id="category">
 
 	<!-- Start Header Area -->
 	<header class="header_area sticky-header">
@@ -118,69 +83,3 @@ if ($_POST) {
 		</div>
 	</header>
 	<!-- End Header Area -->
-
-	<!-- Start Banner Area -->
-	<section class="banner-area organic-breadcrumb">
-		<div class="container">
-			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
-				<div class="col-first">
-					<h1>Login</h1>
-					<nav class="d-flex align-items-center">
-						<a href="index.php">Home<span class="lnr lnr-arrow-right"></span></a>
-						<a href="login.php">Login</a>
-					</nav>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!-- End Banner Area -->
-
-	<!--================Login Box Area =================-->
-	<section class="login_box_area section_gap">
-		<div class="container">
-			<div class="row">
-				
-				<div class="col-lg-12">
-					<div class="login_form_inner" style="padding-top:50px;">
-						<h3>Log in to your account</h3>
-						<form class="row login_form" action="" method="post" id="contactForm" novalidate="novalidate">
-						<input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; 
-                        ?>">
-							<div class="col-md-12 form-group">
-								<input type="email" class="form-control" id="email" name="email" 
-								style="<?php echo empty($emailError) ? '' : 'border:1px solid red';
-								?>" placeholder="Email" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email'">
-								 <p style="text-align:left;color:red;"><?php echo empty($emailError) ? '' : $emailError ?></p>
-							</div>
-							<div class="col-md-12 form-group">
-								<input type="password" class="form-control" id="password" 
-								name="password" style="<?php echo empty($passwordError) ? '' : 'border:1px solid red';?>" placeholder="Password" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'">
-								<p style="text-align:left;color:red;"><?php echo empty($passwordError) ? '' : $passwordError ?></p>
-							</div>
-							<!-- <div class="col-md-12 form-group">
-								<div class="creat_account">
-									<input type="checkbox" id="f-option2" name="selector">
-									<label for="f-option2">Keep me logged in</label>
-								</div>
-							</div> -->
-							<div class="col-md-12 form-group">
-								<button type="submit" value="submit" class="primary-btn">Log In</button>
-								<a class="text-primary" href="register.php">Not a member? Create an account</a>
-							</div>
-							
-						</form>
-						
-					</div>
-				</div>
-			</div>
-		</div>
-	</section>
-	<!--================End Login Box Area =================-->
-
-	<!-- start footer Area -->
-	<?php include('footer.php');?>
-
-	<!-- End footer Area -->
-</body>
-
-</html>
