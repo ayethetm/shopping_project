@@ -66,6 +66,7 @@ require 'config/common.php';
 								</ul>
 							</li>
 							<li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+							<li class="nav-item"><a class="nav-link" href="login.php">Login / Register</a></li>
 						</ul>
 						<ul class="nav navbar-nav navbar-right">
 							<li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
