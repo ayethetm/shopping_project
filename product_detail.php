@@ -68,18 +68,24 @@
                 <?php }
                  } ?>
                   <div class="product_count">
-                    <label for="qty">Quantity:</label>
-                    <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
-                    <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-                    class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
-                    <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
-                    class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i>
-                    </button>
-                  </div>
-                  <div class="card_area d-flex align-items-center mb-5">
-                    <a class="primary-btn" href="#">Add to Cart</a>
-                    <a class="btn btn-secondary btn" href="index.php">Back</a>
-                  </div>
+                    <form action="add_to_cart.php" method="post">
+                        <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; 
+                        ?>">
+                        <input type="hidden" name="id" value="<?php echo $value['id']; ?>" >
+                        <label for="qty">Quantity:</label>
+                        <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:" class="input-text qty">
+                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
+                        class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
+                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
+                        class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i>
+                        </button>
+                      </div>
+                      <div class="card_area d-flex align-items-center mb-5">
+                        <a class="primary-btn" href="#" style="color:white;">Add to Cart</a>
+                        <a class="btn btn-secondary btn" href="index.php">Back</a>
+                      </div>
+                    </form>
+                    
                 </div>
               </div>
     </div>
