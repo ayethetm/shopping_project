@@ -1,3 +1,9 @@
+<?php
+session_start();
+require 'config/config.php';
+require 'config/common.php';
+
+?>
 <!DOCTYPE html>
 <html lang="zxx" class="no-js">
 
@@ -15,7 +21,7 @@
     <!-- meta character set -->
     <meta charset="UTF-8">
     <!-- Site Title -->
-    <title>Karma Shop</title>
+    <title>Neko Shop</title>
 
     <!--
             CSS
@@ -38,7 +44,7 @@
 			<nav class="navbar navbar-expand-lg navbar-light main_box">
         <div class="container">
 					<!-- Brand and toggle get grouped for better mobile display -->
-					<a class="navbar-brand logo_h" href="index.html"><h4>AP Shopping<h4></a>
+					<a class="navbar-brand logo_h" href="index.html"><h4>Neko Shop<h4></a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
 					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="icon-bar"></span>
@@ -76,8 +82,8 @@
                 <div class="col-first">
                     <h1>Shopping Cart</h1>
                     <nav class="d-flex align-items-center">
-                        <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-                        <a href="category.html">Cart</a>
+                        <a href="index.php">Home<span class="lnr lnr-arrow-right"></span></a>
+                        <a href="cart.php">Cart</a>
                     </nav>
                 </div>
             </div>
@@ -99,22 +105,44 @@
                                 <th scope="col">Total</th>
                             </tr>
                         </thead>
+                        <?php
+
+                            if (isset($_SESSION['cart'])) 
+                            { 
+                                $keys = array_keys($_SESSION['cart']);
+                                // $qty = array_values($_SESSION['cart']);
+                                foreach ($keys as $key => $value) 
+                                { 
+                                        $stmt = $pdo->prepare("SELECT id,name,price,image FROM products WHERE " .$value);
+                                        $stmt->execute();
+                                        $result[] = $stmt->fetchAll();
+                                        
+                                }
+
+                                // print_r($result);exit();
+                               
+                            }
+                        ?>
                         <tbody>
-                            <tr>
+                            <?php 
+                            foreach ($result as $r) { 
+                                foreach($r as $key=>$value) { ?>
+                                <tr>
                                 <td>
                                     <div class="media">
                                         <div class="d-flex">
-                                            <img src="img/cart.jpg" alt="">
+                                            <img src="images/<?php echo $value['image']; ?>" alt="product img" style="width:50px;height:50px;">
                                         </div>
                                         <div class="media-body">
-                                            <p>Minimalistic shop for multipurpose use</p>
+                                            <p><?php echo $value['name']; ?></p>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <h5>$360.00</h5>
+                                    <h5><?php echo escape(number_format($value['price'])); ?> MMK</h5>
                                 </td>
                                 <td>
+                                   
                                     <div class="product_count">
                                         <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:"
                                             class="input-text qty">
@@ -125,66 +153,12 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <h5>$720.00</h5>
+                                    <h5><?php echo escape(number_format($value['price'])); ?> MMK</h5>
                                 </td>
                             </tr>
-                            <tr>
-                                <td>
-                                    <div class="media">
-                                        <div class="d-flex">
-                                            <img src="img/cart.jpg" alt="">
-                                        </div>
-                                        <div class="media-body">
-                                            <p>Minimalistic shop for multipurpose use</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <h5>$360.00</h5>
-                                </td>
-                                <td>
-                                    <div class="product_count">
-                                        <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:"
-                                            class="input-text qty">
-                                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-                                            class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
-                                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
-                                            class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
-                                    </div>
-                                </td>
-                                <td>
-                                    <h5>$720.00</h5>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <div class="media">
-                                        <div class="d-flex">
-                                            <img src="img/cart.jpg" alt="">
-                                        </div>
-                                        <div class="media-body">
-                                            <p>Minimalistic shop for multipurpose use</p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <h5>$360.00</h5>
-                                </td>
-                                <td>
-                                    <div class="product_count">
-                                        <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:"
-                                            class="input-text qty">
-                                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-                                            class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
-                                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
-                                            class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
-                                    </div>
-                                </td>
-                                <td>
-                                    <h5>$720.00</h5>
-                                </td>
-                            </tr>
-                            <tr class="bottom_button">
+                            <?php } } ?>
+                            
+                            <!-- <tr class="bottom_button">
                                 <td>
                                     <a class="gray_btn" href="#">Update Cart</a>
                                 </td>
@@ -201,7 +175,7 @@
                                         <a class="gray_btn" href="#">Close Coupon</a>
                                     </div>
                                 </td>
-                            </tr>
+                            </tr> -->
                             <tr>
                                 <td>
 
@@ -213,10 +187,10 @@
                                     <h5>Subtotal</h5>
                                 </td>
                                 <td>
-                                    <h5>$2160.00</h5>
+                                    <h5><?php echo escape(number_format($value['price'])); ?> MMK</h5>
                                 </td>
                             </tr>
-                            <tr class="shipping_area">
+                            <!-- <tr class="shipping_area">
                                 <td>
 
                                 </td>
@@ -249,7 +223,7 @@
                                         <a class="gray_btn" href="#">Update Details</a>
                                     </div>
                                 </td>
-                            </tr>
+                            </tr> -->
                             <tr class="out_button_area">
                                 <td>
 
@@ -262,8 +236,8 @@
                                 </td>
                                 <td>
                                     <div class="checkout_btn_inner d-flex align-items-center">
-                                        <a class="gray_btn" href="#">Continue Shopping</a>
-                                        <a class="primary-btn" href="#">Proceed to checkout</a>
+                                        <a class="gray_btn" href="index.php">Continue Shopping</a>
+                                        <a class="primary-btn" href="checkout.php">Proceed to checkout</a>
                                     </div>
                                 </td>
                             </tr>

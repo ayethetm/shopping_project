@@ -61,15 +61,28 @@ require 'config/common.php';
 									<li class="nav-item"><a class="nav-link" href="category.html">Shop Category</a></li>
 									<li class="nav-item"><a class="nav-link" href="single-product.html">Product Details</a></li>
 									<li class="nav-item"><a class="nav-link" href="checkout.html">Product Checkout</a></li>
-									<li class="nav-item"><a class="nav-link" href="cart.html">Shopping Cart</a></li>
+									<li class="nav-item"><a class="nav-link" href="cart.php">Shopping Cart</a></li>
 									<li class="nav-item"><a class="nav-link" href="confirmation.html">Confirmation</a></li>
 								</ul>
 							</li>
 							<li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
 							<li class="nav-item"><a class="nav-link" href="login.php">Login / Register</a></li>
 						</ul>
+						<?php 
+						
+						$cart = 0;
+						if (isset($_SESSION['cart'])) 
+								{ 
+									foreach ($_SESSION['cart'] as $key => $value) 
+									{ 
+										$cart += $value;
+									}
+									
+								} ?>
 						<ul class="nav navbar-nav navbar-right">
-							<li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
+							<li class="nav-item"><a href="cart.php" class="cart"><span class="ti-bag">
+							<i class="fa badge bg-warning float-right"><?php echo $cart;?>
+							</i></a></li>
 							<li class="nav-item">
 								<button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
 							</li>

@@ -1,9 +1,14 @@
 <?php include('header.php') ?>
+
 <?php
   $stmt = $pdo->prepare("SELECT * FROM products WHERE id=".$_GET['id']);
 	$stmt->execute();
 	$result = $stmt->fetchAll();
 
+  // if (isset($_SESSION['cart'])) {
+  //   print_r($_SESSION['cart']);
+  // }
+  
   //to get category name 
   $category_id = $result[0]['category_id'];
   $cat_stmt = $pdo->prepare('SELECT name FROM categories WHERE id='.$category_id);
@@ -68,6 +73,7 @@
                 <?php }
                  } ?>
                   <div class="product_count">
+                    <!-- add to cart -->
                     <form action="add_to_cart.php" method="post">
                         <input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; 
                         ?>">
@@ -81,7 +87,7 @@
                         </button>
                       </div>
                       <div class="card_area d-flex align-items-center mb-5">
-                        <a class="primary-btn" href="#" style="color:white;">Add to Cart</a>
+                        <button class="primary-btn btn" type="submit" style="color:white;">Add to Cart</button>
                         <a class="btn btn-secondary btn" href="index.php">Back</a>
                       </div>
                     </form>

@@ -96,7 +96,7 @@
 						<?php
 							if ($result) {
 								foreach ($result as $key => $value) { ?>
-									<div class="col-lg-4 col-md-6 col-sm-12 mb-5">
+									<div class="col-lg-4 col-md-6 col-sm-6 col-xs-6 mb-5">
 									<div class="card h-100" style="margin-top:0px;margin-bottom:20px;padding: 16px;text-align: left;">
 										<img src="images/<?php echo escape($value['image']); ?>" alt="cat food image" style="height:160px;width:200px;">
 										<div class="card-body p-0">
