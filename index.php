@@ -103,7 +103,13 @@
 											<a href="product_detail.php?id=<?php echo $value['id'] ?>"><h5 class="card-title"><?php echo escape($value['name']) ?>
 											</h5></a>
 											<p style="small text-muted" class="card-text"><?php echo escape(number_format($value['price'])) ?> MMK</p>
-											<button class="btn btn-sm" style="background-color:#ff8507;color:white;">Add to cart  <span class="ti-bag"></span></button>
+											<form action="add_to_cart.php" method="post">
+												<input type="hidden" name="_token" value="<?php echo $_SESSION['_token']; 
+												?>">
+												<input type="hidden" name="id" value="<?php echo $value['id']; ?>" >
+												<input type="hidden" name="qty" value="1">
+												<button class="btn btn-sm" type="submit" style="background-color:#ff8507;color:white;">Add to cart  <span class="ti-bag"></span></button>
+											</form>
 										</div>
 											<!-- <h6 class="l-through">$210.00</h6> -->
 								</div></div>
