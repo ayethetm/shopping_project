@@ -18,10 +18,10 @@ if ($_POST) {
     else{
         if (isset($_SESSION['cart']))
     {
-        $_SESSION['cart']['id='.$id] += $qty; // id=1 -> 10+next+next
+        $_SESSION['cart']['id'.$id] += $qty; // id=1 -> 10+next+next
     }else
     {
-        $_SESSION['cart']['id='.$id] = $qty; // id=1 -> 10
+        $_SESSION['cart']['id'.$id] = $qty; // id=1 -> 10
     }
     header("Location:product_detail.php?id=".$id);
     }

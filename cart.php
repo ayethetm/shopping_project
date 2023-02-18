@@ -96,153 +96,161 @@ require 'config/common.php';
         <div class="container">
             <div class="cart_inner">
                 <div class="table-responsive">
-                    <table class="table">
+                    <?php
+                        if (!empty($_SESSION['cart'])) { ?>
+                            <table class="table">
                         <thead>
                             <tr>
                                 <th scope="col">Product</th>
                                 <th scope="col">Price</th>
                                 <th scope="col">Quantity</th>
                                 <th scope="col">Total</th>
+                                <th scope="col">Action</th>
                             </tr>
                         </thead>
-                        <?php
+                            <?php
 
-                            if (isset($_SESSION['cart'])) 
-                            { 
-                                $keys = array_keys($_SESSION['cart']);
-                                // $qty = array_values($_SESSION['cart']);
-                                foreach ($keys as $key => $value) 
-                                { 
-                                        $stmt = $pdo->prepare("SELECT id,name,price,image FROM products WHERE " .$value);
-                                        $stmt->execute();
-                                        $result[] = $stmt->fetchAll();
-                                        
-                                }
-
-                                // print_r($result);exit();
+                                $total = 0;
+                                foreach ($_SESSION['cart'] as $key => $value) :
                                
-                            }
-                        ?>
-                        <tbody>
-                            <?php 
-                            foreach ($result as $r) { 
-                                foreach($r as $key=>$value) { ?>
-                                <tr>
-                                <td>
-                                    <div class="media">
-                                        <div class="d-flex">
-                                            <img src="images/<?php echo $value['image']; ?>" alt="product img" style="width:50px;height:50px;">
-                                        </div>
-                                        <div class="media-body">
-                                            <p><?php echo $value['name']; ?></p>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <h5><?php echo escape(number_format($value['price'])); ?> MMK</h5>
-                                </td>
-                                <td>
-                                   
-                                    <div class="product_count">
-                                        <input type="text" name="qty" id="sst" maxlength="12" value="1" title="Quantity:"
-                                            class="input-text qty">
-                                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
-                                            class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
-                                        <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
-                                            class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button>
-                                    </div>
-                                </td>
-                                <td>
-                                    <h5><?php echo escape(number_format($value['price'])); ?> MMK</h5>
-                                </td>
-                            </tr>
-                            <?php } } ?>
-                            
-                            <!-- <tr class="bottom_button">
-                                <td>
-                                    <a class="gray_btn" href="#">Update Cart</a>
-                                </td>
-                                <td>
+                                    $id = str_replace('id','',$key);//remove 'id'
+                                    $stmt = $pdo->prepare("SELECT * FROM products WHERE id=".$id);
+                                    $stmt->execute();
+                                    $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                                    $total += $result['price'] * $value;
+                            ?>
+                            <tbody>
+                           <tr>
+                           <td>
+                               <div class="media">
+                                   <div class="d-flex">
+                                       <img src="images/<?php echo $result['image']; ?>" alt="product img" style="width:50px;height:50px;">
+                                   </div>
+                                   <div class="media-body">
+                                       <p><?php echo $result['name']; ?></p>
+                                   </div>
+                               </div>
+                           </td>
+                           <td>
+                               <h5><?php echo escape(number_format($result['price'])); ?> MMK</h5>
+                           </td>
+                           <td>
+                              
+                               <div class="product_count">
+                                   <?php echo $value; ?>
+                                   <!-- <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst )) result.value++;return false;"
+                                       class="increase items-count" type="button"><i class="lnr lnr-chevron-up"></i></button>
+                                   <button onclick="var result = document.getElementById('sst'); var sst = result.value; if( !isNaN( sst ) &amp;&amp; sst > 0 ) result.value--;return false;"
+                                       class="reduced items-count" type="button"><i class="lnr lnr-chevron-down"></i></button> -->
+                               </div>
+                           </td>
+                           <td>
+                               <h5><?php echo escape(number_format($result['price'] * $value)); ?> MMK</h5>
+                           </td>
+                           <td>
+                            <a class="primary-btn" href="clear_cart_item.php?pid=<?php echo $result['id']; ?>">Clear</a>
+                           </td>
+                       </tr>
+                      
+                       
+                       <!-- <tr class="bottom_button">
+                           <td>
+                               <a class="gray_btn" href="#">Update Cart</a>
+                           </td>
+                           <td>
 
-                                </td>
-                                <td>
+                           </td>
+                           <td>
 
-                                </td>
-                                <td>
-                                    <div class="cupon_text d-flex align-items-center">
-                                        <input type="text" placeholder="Coupon Code">
-                                        <a class="primary-btn" href="#">Apply</a>
-                                        <a class="gray_btn" href="#">Close Coupon</a>
-                                    </div>
-                                </td>
-                            </tr> -->
-                            <tr>
-                                <td>
+                           </td>
+                           <td>
+                               <div class="cupon_text d-flex align-items-center">
+                                   <input type="text" placeholder="Coupon Code">
+                                   <a class="primary-btn" href="#">Apply</a>
+                                   <a class="gray_btn" href="#">Close Coupon</a>
+                               </div>
+                           </td>
+                       </tr> -->
+                       <?php endforeach; ?>
+                       <tr>
+                           <td>
 
-                                </td>
-                                <td>
+                           </td>
+                           <td>
 
-                                </td>
-                                <td>
-                                    <h5>Subtotal</h5>
-                                </td>
-                                <td>
-                                    <h5><?php echo escape(number_format($value['price'])); ?> MMK</h5>
-                                </td>
-                            </tr>
-                            <!-- <tr class="shipping_area">
-                                <td>
+                           </td>
+                           
+                           <td>
+                               <h5>Subtotal</h5>
+                           </td>
+                           <td>
+                               <h5><?php echo escape(number_format($total)); ?> MMK</h5>
+                           </td>
+                           <td></td>
+                       </tr>
+                       <!-- <tr class="shipping_area">
+                           <td>
 
-                                </td>
-                                <td>
+                           </td>
+                           <td>
 
-                                </td>
-                                <td>
-                                    <h5>Shipping</h5>
-                                </td>
-                                <td>
-                                    <div class="shipping_box">
-                                        <ul class="list">
-                                            <li><a href="#">Flat Rate: $5.00</a></li>
-                                            <li><a href="#">Free Shipping</a></li>
-                                            <li><a href="#">Flat Rate: $10.00</a></li>
-                                            <li class="active"><a href="#">Local Delivery: $2.00</a></li>
-                                        </ul>
-                                        <h6>Calculate Shipping <i class="fa fa-caret-down" aria-hidden="true"></i></h6>
-                                        <select class="shipping_select">
-                                            <option value="1">Bangladesh</option>
-                                            <option value="2">India</option>
-                                            <option value="4">Pakistan</option>
-                                        </select>
-                                        <select class="shipping_select">
-                                            <option value="1">Select a State</option>
-                                            <option value="2">Select a State</option>
-                                            <option value="4">Select a State</option>
-                                        </select>
-                                        <input type="text" placeholder="Postcode/Zipcode">
-                                        <a class="gray_btn" href="#">Update Details</a>
-                                    </div>
-                                </td>
-                            </tr> -->
-                            <tr class="out_button_area">
-                                <td>
+                           </td>
+                           <td>
+                               <h5>Shipping</h5>
+                           </td>
+                           <td>
+                               <div class="shipping_box">
+                                   <ul class="list">
+                                       <li><a href="#">Flat Rate: $5.00</a></li>
+                                       <li><a href="#">Free Shipping</a></li>
+                                       <li><a href="#">Flat Rate: $10.00</a></li>
+                                       <li class="active"><a href="#">Local Delivery: $2.00</a></li>
+                                   </ul>
+                                   <h6>Calculate Shipping <i class="fa fa-caret-down" aria-hidden="true"></i></h6>
+                                   <select class="shipping_select">
+                                       <option value="1">Bangladesh</option>
+                                       <option value="2">India</option>
+                                       <option value="4">Pakistan</option>
+                                   </select>
+                                   <select class="shipping_select">
+                                       <option value="1">Select a State</option>
+                                       <option value="2">Select a State</option>
+                                       <option value="4">Select a State</option>
+                                   </select>
+                                   <input type="text" placeholder="Postcode/Zipcode">
+                                   <a class="gray_btn" href="#">Update Details</a>
+                               </div>
+                           </td>
+                       </tr> -->
+                       
+                       <tr class="out_button_area">
+                           <td>
 
-                                </td>
-                                <td>
+                           </td>
+                           <td>
 
-                                </td>
-                                <td>
+                           </td>
+                           <td>
 
-                                </td>
-                                <td>
-                                    <div class="checkout_btn_inner d-flex align-items-center">
-                                        <a class="gray_btn" href="index.php">Continue Shopping</a>
-                                        <a class="primary-btn" href="checkout.php">Proceed to checkout</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
+                           </td>
+                           <td></td>
+                           
+                           <td>
+                               <div class="checkout_btn_inner d-flex align-items-center">
+                                   <a class="gray_btn" href="clear_all.php">Clear All</a>
+                                   <a class="primary-btn" href="checkout.php">Proceed to checkout</a>
+                                   <a class="gray_btn" href="index.php">Continue Shopping</a>
+                               </div>
+                           </td>
+                           <td></td>
+                       </tr>
+                   </tbody>
+                           
+                                
+                              
                     </table>
+                    <?php    } else { echo '<h4 class="text-center">Your Cart is empty now! <a href="index.php">Continue Shopping</h4>'; }
+                    ?>
                 </div>
             </div>
         </div>
@@ -250,86 +258,7 @@ require 'config/common.php';
     <!--================End Cart Area =================-->
 
     <!-- start footer Area -->
-    <footer class="footer-area section_gap">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-3  col-md-6 col-sm-6">
-                    <div class="single-footer-widget">
-                        <h6>About Us</h6>
-                        <p>
-                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt
-                            ut labore dolore
-                            magna aliqua.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-lg-4  col-md-6 col-sm-6">
-                    <div class="single-footer-widget">
-                        <h6>Newsletter</h6>
-                        <p>Stay update with our latest</p>
-                        <div class="" id="mc_embed_signup">
-
-                            <form target="_blank" novalidate="true" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01"
-                                method="get" class="form-inline">
-
-                                <div class="d-flex flex-row">
-
-                                    <input class="form-control" name="EMAIL" placeholder="Enter Email" onfocus="this.placeholder = ''"
-                                        onblur="this.placeholder = 'Enter Email '" required="" type="email">
-
-
-                                    <button class="click-btn btn btn-default"><i class="fa fa-long-arrow-right"
-                                            aria-hidden="true"></i></button>
-                                    <div style="position: absolute; left: -5000px;">
-                                        <input name="b_36c4fd991d266f23781ded980_aefe40901a" tabindex="-1" value=""
-                                            type="text">
-                                    </div>
-
-                                    <!-- <div class="col-lg-4 col-md-4">
-													<button class="bb-btn btn"><span class="lnr lnr-arrow-right"></span></button>
-												</div>  -->
-                                </div>
-                                <div class="info"></div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-3  col-md-6 col-sm-6">
-                    <div class="single-footer-widget mail-chimp">
-                        <h6 class="mb-20">Instragram Feed</h6>
-                        <ul class="instafeed d-flex flex-wrap">
-                            <li><img src="img/i1.jpg" alt=""></li>
-                            <li><img src="img/i2.jpg" alt=""></li>
-                            <li><img src="img/i3.jpg" alt=""></li>
-                            <li><img src="img/i4.jpg" alt=""></li>
-                            <li><img src="img/i5.jpg" alt=""></li>
-                            <li><img src="img/i6.jpg" alt=""></li>
-                            <li><img src="img/i7.jpg" alt=""></li>
-                            <li><img src="img/i8.jpg" alt=""></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-6 col-sm-6">
-                    <div class="single-footer-widget">
-                        <h6>Follow Us</h6>
-                        <p>Let us be social</p>
-                        <div class="footer-social d-flex align-items-center">
-                            <a href="#"><i class="fa fa-facebook"></i></a>
-                            <a href="#"><i class="fa fa-twitter"></i></a>
-                            <a href="#"><i class="fa fa-dribbble"></i></a>
-                            <a href="#"><i class="fa fa-behance"></i></a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="footer-bottom d-flex justify-content-center align-items-center flex-wrap">
-                <p class="footer-text m-0"><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart-o" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-</p>
-            </div>
-        </div>
-    </footer>
+    <?php include('footer.php');?>
     <!-- End footer Area -->
 
     <script src="js/vendor/jquery-2.2.4.min.js"></script>
