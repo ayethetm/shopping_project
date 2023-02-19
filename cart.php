@@ -238,7 +238,7 @@ require 'config/common.php';
                            <td>
                                <div class="checkout_btn_inner d-flex align-items-center">
                                    <a class="gray_btn" href="clear_all.php">Clear All</a>
-                                   <a class="primary-btn" href="checkout.php">Proceed to checkout</a>
+                                   <a class="primary-btn" href="order_submit.php">Confirm Order</a>
                                    <a class="gray_btn" href="index.php">Continue Shopping</a>
                                </div>
                            </td>

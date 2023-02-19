@@ -1,3 +1,57 @@
+<?php
+
+session_start();
+require 'config/config.php';
+require 'config/common.php';
+
+	//check whether user is logged in or not
+	if (empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
+		header('Location:login.php');
+	}
+	
+	if ( !empty($_SESSION['cart'])) 
+	{
+		
+		$user_id = $_SESSION['user_id']; //logged in user
+		$total = 0;
+		foreach ($_SESSION['cart'] as $key => $value) 
+		{
+			$id = str_replace('id','',$key);//remove 'id'
+			$stmt = $pdo->prepare("SELECT * FROM products WHERE id=".$id);
+			$stmt->execute();
+			$result = $stmt->fetch(PDO::FETCH_ASSOC);
+			$total += $result['price'] * $value;
+		}
+			// add ordersubmit data(all cart data) to 'Sale_Orders table' (user_id,total_price,order_date)
+		
+			$order_stmt = $pdo->prepare("INSERT INTO sale_orders(user_id,total_price,order_date) VALUES(:user_id,:total_price,:order_date)");
+			$order_result = $order_stmt->execute(array(':user_id' => $user_id , ':total_price' => $total,':order_date' => date('Y-m-d H:i:s')));
+				
+		
+		// add ordersubmit data(all cart data) to 'Sale_Order_Detail table' (sale_order_id,product_id,quantity,order_date)
+		if ($result) 
+		{
+			$sale_order_id = $pdo->lastInsertId(); // last inserted id
+			foreach ($_SESSION['cart'] as $key => $value) 
+			{
+				$id = str_replace('id','',$key);//remove 'id'
+				$order_detail_stmt = $pdo->prepare("INSERT INTO sale_order_detail(sale_order_id,product_id,quantity,order_date) VALUES(:sale_order_id,:product_id,:quantity,:order_date)");
+				$order_detail_result = $order_detail_stmt->execute(array(':sale_order_id' => $sale_order_id , ':product_id' => $id,':quantity' => $value,':order_date' => date('Y-m-d H:i:s')));
+
+				// reduce product quantity for each order submit product
+				$qty_stmt = $pdo->prepare("SELECT quantity FROM products WHERE id=".$id);
+				$qty_stmt->execute();
+				$qty_result = $qty_stmt->fetch(PDO::FETCH_ASSOC);
+
+				$update_qty = $qty_result['quantity'] - $value;
+				$stmt = $pdo->prepare("UPDATE products SET quantity=:update_qty  WHERE id=:id");
+				$stmt->execute(array(":update_qty"=>$update_qty,":id"=>$id));
+			} 
+		}
+		unset($_SESSION['cart']);
+		
+	}
+?>
 <!DOCTYPE html>
 <html lang="zxx" class="no-js">
 
@@ -15,7 +69,7 @@
 	<!-- meta character set -->
 	<meta charset="UTF-8">
 	<!-- Site Title -->
-	<title>Karma Shop</title>
+	<title>Neko Shop</title>
 
 	<!--
 		CSS
@@ -38,7 +92,7 @@
 			<nav class="navbar navbar-expand-lg navbar-light main_box">
 				<div class="container">
 					<!-- Brand and toggle get grouped for better mobile display -->
-					<a class="navbar-brand logo_h" href="index.html"><h4>AP Shopping<h4></a>
+					<a class="navbar-brand logo_h" href="index.php"><h4>Neko Shop<h4></a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
 					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="icon-bar"></span>
@@ -48,16 +102,16 @@
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
 						<ul class="nav navbar-nav navbar-right">
-							<li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
-							<li class="nav-item">
+							<li class="nav-item"><a href="cart.php" class="cart"><span class="ti-bag"></span></a></li>
+							<!-- <li class="nav-item">
 								<button class="search"><span class="lnr lnr-magnifier" id="search"></span></button>
-							</li>
+							</li> -->
 						</ul>
 					</div>
 				</div>
 			</nav>
 		</div>
-		<div class="search_input" id="search_input_box">
+		<!-- <div class="search_input" id="search_input_box">
 			<div class="container">
 				<form class="d-flex justify-content-between">
 					<input type="text" class="form-control" id="search_input" placeholder="Search Here">
@@ -65,7 +119,7 @@
 					<span class="lnr lnr-cross" id="close_search" title="Close Search"></span>
 				</form>
 			</div>
-		</div>
+		</div> -->
 	</header>
 	<!-- End Header Area -->
 
@@ -74,9 +128,10 @@
 		<div class="container">
 			<div class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end">
 				<div class="col-first">
-					<h1>Confirmation</h1>
+					<h1>Order Confirmation</h1>
 					<nav class="d-flex align-items-center">
-						<a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="index.php">Home<span class="lnr lnr-arrow-right"></span></a>
+						<a href="order_submit.php">Order Confirm</a>
 					</nav>
 				</div>
 			</div>
@@ -89,14 +144,22 @@
 		<div class="container">
 			<h3 class="title_confirmation">Thank you. Your order has been received.</h3>
 			<div class="row order_d_inner">
-				<div class="col-lg-6">
+				<div class="col-lg-6 mb-5">
 					<div class="details_item">
 						<h4>Order Info</h4>
 						<ul class="list">
-							<li><a href="#"><span>Order number</span> : 60235</a></li>
-							<li><a href="#"><span>Date</span> : Los Angeles</a></li>
-							<li><a href="#"><span>Total</span> : USD 2210</a></li>
-							<li><a href="#"><span>Payment method</span> : Check payments</a></li>
+						<?php
+						 $total = 0;
+						 $stmt = $pdo->prepare('SELECT total_price FROM sale_orders WHERE user_id='.$_SESSION['user_id']);
+						 $stmt->execute();
+						 $result = $stmt->fetchAll();
+						 foreach ($result as $key => $value) {
+							$total += $value['total_price'];
+						 }
+						
+						 ?>
+						<li><a href="#"><span>Total</span> : <?php echo escape(number_format($total)) ?> MMK</a></li>
+						<li><a href="#"><span>Payment method</span> : Check payments</a></li> 
 						</ul>
 					</div>
 				</div>
@@ -104,10 +167,17 @@
 					<div class="details_item">
 						<h4>Shipping Address</h4>
 						<ul class="list">
-							<li><a href="#"><span>Street</span> : 56/8</a></li>
-							<li><a href="#"><span>City</span> : Los Angeles</a></li>
-							<li><a href="#"><span>Country</span> : United States</a></li>
-							<li><a href="#"><span>Postcode </span> : 36952</a></li>
+						<?php
+						 $stmt = $pdo->prepare('SELECT * FROM users WHERE id='.$_SESSION['user_id']);
+						 $stmt->execute();
+						 $result = $stmt->fetchAll();
+						 if ($result) {
+							foreach ($result as $key => $value) { ?>
+								<li><a href="#"><span>Name</span> : <?php echo escape($value['name']); ?></a></li>
+								<li><a href="#"><span>Address</span> : <?php echo escape($value['address']); ?></a></li>
+							<li><a href="#"><span>Phone</span> : <?php echo escape($value['phone']); ?></a></li>
+						<?php	}
+						 } ?>
 						</ul>
 					</div>
 				</div>

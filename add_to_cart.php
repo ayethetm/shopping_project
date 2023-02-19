@@ -2,6 +2,9 @@
 
 session_start();
 require 'config/config.php';
+require 'config/common.php';
+
+
 if ($_POST) {
 
     $id = $_POST['id'];
@@ -25,9 +28,6 @@ if ($_POST) {
     }
     header("Location:index.php");
     }
-
-    
-
 }
 
 

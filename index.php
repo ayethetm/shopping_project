@@ -20,25 +20,25 @@
 			{
 				//get category id
 				$category_id = $_GET['category'];
-				$stmt = $pdo->prepare("SELECT * FROM products WHERE category_id=$category_id ORDER BY id DESC");
+				$stmt = $pdo->prepare("SELECT * FROM products WHERE category_id=$category_id AND quantity > 0 ORDER BY id DESC");
 				$stmt->execute();
 				$rawResult = $stmt->fetchAll();
 
 				$total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
 
-				$stmt = $pdo->prepare("SELECT * FROM products WHERE category_id=$category_id ORDER BY id DESC LIMIT $offset,$numOfrecs");
+				$stmt = $pdo->prepare("SELECT * FROM products WHERE category_id=$category_id AND quantity > 0 ORDER BY id DESC LIMIT $offset,$numOfrecs");
 				$stmt->execute();
 				$result = $stmt->fetchAll();
 
 			}
 			else{
-				$stmt = $pdo->prepare("SELECT * FROM products ORDER BY id DESC");
+				$stmt = $pdo->prepare("SELECT * FROM products WHERE quantity > 0 ORDER BY id DESC");
 				$stmt->execute();
 				$rawResult = $stmt->fetchAll();
 
 				$total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
 
-				$stmt = $pdo->prepare("SELECT * FROM products ORDER BY id DESC LIMIT $offset,$numOfrecs");
+				$stmt = $pdo->prepare("SELECT * FROM products WHERE quantity > 0 ORDER BY id DESC LIMIT $offset,$numOfrecs");
 				$stmt->execute();
 				$result = $stmt->fetchAll();
 			}
@@ -47,13 +47,13 @@
 		{
 			$searchKey = $_POST ? $_POST['search'] : $_COOKIE['search'];
 
-			$stmt = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' ORDER BY id DESC");
+			$stmt = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' AND quantity > 0 ORDER BY id DESC");
 			$stmt->execute();
 			$rawResult = $stmt->fetchAll();
 
 			$total_pages = ceil(count($rawResult)/ $numOfrecs); //to get total pages
 
-			$stmt = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' ORDER BY id DESC LIMIT $offset,$numOfrecs");
+			$stmt = $pdo->prepare("SELECT * FROM products WHERE name LIKE '%$searchKey%' AND quantity > 0 ORDER BY id DESC LIMIT $offset,$numOfrecs");
 			$stmt->execute();
 			$result = $stmt->fetchAll();
 		}
