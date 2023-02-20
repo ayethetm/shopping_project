@@ -36,7 +36,7 @@ require 'config/common.php';
 			{
 				$id = str_replace('id','',$key);//remove 'id'
 				$order_detail_stmt = $pdo->prepare("INSERT INTO sale_order_detail(sale_order_id,product_id,quantity,order_date) VALUES(:sale_order_id,:product_id,:quantity,:order_date)");
-				$order_detail_result = $order_detail_stmt->execute(array(':sale_order_id' => $sale_order_id , ':product_id' => $id,':quantity' => $value,':order_date' => date('Y-m-d H:i:s')));
+				$order_detail_result = $order_detail_stmt->execute(array(':sale_order_id' => $sale_order_id , ':product_id' => $id,':quantity' => $value,':order_date' => date('Y-m-d')));
 
 				// reduce product quantity for each order submit product
 				$qty_stmt = $pdo->prepare("SELECT quantity FROM products WHERE id=".$id);
@@ -101,6 +101,15 @@ require 'config/common.php';
 					</button>
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+					<ul class="nav navbar-nav menu_nav ml-auto">
+							<li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+							<li class="nav-item">
+								<?php if(!empty($_SESSION['user_id'])) { ?> <a class="nav-link" href="order_submit.php">Orders</a> <?php } ?>
+								</li>
+							<li class="nav-item">
+								<?php if(empty($_SESSION['user_id'])) { ?> <a class="nav-link" href="login.php">Login / Register</a> <?php } else { ?> <a class="nav-link" href="logout.php">Logout</a> <?php } ?>
+								</li>
+						</ul>
 						<ul class="nav navbar-nav navbar-right">
 							<li class="nav-item"><a href="cart.php" class="cart"><span class="ti-bag"></span></a></li>
 							<!-- <li class="nav-item">
@@ -142,24 +151,61 @@ require 'config/common.php';
 	<!--================Order Details Area =================-->
 	<section class="order_details section_gap">
 		<div class="container">
-			<h3 class="title_confirmation">Thank you. Your order has been received.</h3>
+			<h3 class="title_confirmation">Your order has been received.Thanks for shopping with us.</h3>
 			<div class="row order_d_inner">
 				<div class="col-lg-6 mb-5">
 					<div class="details_item">
-						<h4>Order Info</h4>
+						<h4>Order Info ( <?php echo date('Y-m-d'); ?> )</h4>
 						<ul class="list">
 						<?php
 						 $total = 0;
-						 $stmt = $pdo->prepare('SELECT total_price FROM sale_orders WHERE user_id='.$_SESSION['user_id']);
-						 $stmt->execute();
-						 $result = $stmt->fetchAll();
-						 foreach ($result as $key => $value) {
-							$total += $value['total_price'];
-						 }
+						//get today order info
+						 $date = date('Y-m-d');
 						
-						 ?>
-						<li><a href="#"><span>Total</span> : <?php echo escape(number_format($total)) ?> MMK</a></li>
-						<li><a href="#"><span>Payment method</span> : Check payments</a></li> 
+						 $stmt = $pdo->prepare('SELECT total_price,id FROM sale_orders WHERE user_id=:user_id AND order_date=:order_date');
+						 $stmt->execute(array('user_id'=>$_SESSION['user_id'],'order_date'=>$date));
+						 $result = $stmt->fetchAll();
+
+						//  $keys = array_keys($result);
+						 
+						//  foreach($result as $key => $value) 
+						// 	{
+						// 		$total += $value['total_price'];
+						// 		$product_stmt = $pdo->prepare('SELECT product_id FROM sale_order_detail WHERE sale_order_id='.$value['id']);
+						// 		$product_stmt->execute();
+						// 		$product_result = $product_stmt->fetchAll();
+						// 	}
+						 
+						//  var_dump($product_result);exit();
+						//  
+						 
+						//  foreach ($result as $key => $value) {
+						// 	$total += $r['total_price'];
+						// 	echo $value;
+						// 	// $product_stmt = $pdo->prepare('SELECT product_id FROM sale_order_detail WHERE sale_order_id='.$r['id']);
+						// 	// $product_stmt->execute();
+						// 	// $product_result = $product_stmt->fetchAll();
+						//  }
+						//  exit();
+							
+						
+						// $a = array_values($result);var_dump($a); exit();?> 
+
+						<?php foreach ($result as $key => $value1) { 
+							$total += $value1['total_price'];
+							$product_stmt = $pdo->prepare('SELECT * FROM sale_order_detail WHERE sale_order_id='.$value1['id']);
+							$product_stmt->execute();
+							$product_result = $product_stmt->fetchAll();
+
+							foreach ($product_result as $key => $value2) {
+								$productinfo_stmt = $pdo->prepare('SELECT name FROM products WHERE id='.$value2['product_id']);
+								$productinfo_stmt->execute();
+								$productinfo_result =   $productinfo_stmt->fetchAll(); 
+							
+							foreach($productinfo_result as $key=>$value3) {  ?>
+						<li><span><?php echo escape($value3['name']); ?></span> x <?php echo $value2['quantity']; ?> Ps</li>
+						<?php } } }?>
+						<li><span>Total</span> :  <?php echo escape(number_format($total)) ?> MMK </li>
 						</ul>
 					</div>
 				</div>
@@ -171,6 +217,8 @@ require 'config/common.php';
 						 $stmt = $pdo->prepare('SELECT * FROM users WHERE id='.$_SESSION['user_id']);
 						 $stmt->execute();
 						 $result = $stmt->fetchAll();
+
+						 
 						 if ($result) {
 							foreach ($result as $key => $value) { ?>
 								<li><a href="#"><span>Name</span> : <?php echo escape($value['name']); ?></a></li>

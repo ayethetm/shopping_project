@@ -53,7 +53,7 @@ require 'config/common.php';
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
 					<ul class="nav navbar-nav menu_nav ml-auto">
-							<li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+							<!-- <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li> -->
 							<!-- <li class="nav-item submenu dropdown">
 								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
 								 aria-expanded="false">Shop</a>
@@ -65,7 +65,9 @@ require 'config/common.php';
 									<li class="nav-item"><a class="nav-link" href="confirmation.html">Confirmation</a></li>
 								</ul>
 							</li> -->
-							<li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+							<li class="nav-item">
+								<?php if(!empty($_SESSION['user_id'])) { ?> <a class="nav-link" href="order_submit.php">Orders</a> <?php } ?>
+								</li>
 							<li class="nav-item">
 								<?php if(empty($_SESSION['user_id'])) { ?> <a class="nav-link" href="login.php">Login / Register</a> <?php } else { ?> <a class="nav-link" href="logout.php">Logout</a> <?php } ?>
 								</li>

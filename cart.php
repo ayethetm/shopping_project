@@ -44,7 +44,7 @@ require 'config/common.php';
 			<nav class="navbar navbar-expand-lg navbar-light main_box">
         <div class="container">
 					<!-- Brand and toggle get grouped for better mobile display -->
-					<a class="navbar-brand logo_h" href="index.html"><h4>Neko Shop<h4></a>
+					<a class="navbar-brand logo_h" href="index.php"><h4>Neko Shop<h4></a>
 					<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
 					 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
 						<span class="icon-bar"></span>
@@ -53,6 +53,15 @@ require 'config/common.php';
 					</button>
 					<!-- Collect the nav links, forms, and other content for toggling -->
 					<div class="collapse navbar-collapse offset" id="navbarSupportedContent">
+                    <ul class="nav navbar-nav menu_nav ml-auto">
+							<!-- <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li> -->
+							<li class="nav-item">
+								<?php if(!empty($_SESSION['user_id'])) { ?> <a class="nav-link" href="order_submit.php">Orders</a> <?php } ?>
+								</li>
+							<li class="nav-item">
+								<?php if(empty($_SESSION['user_id'])) { ?> <a class="nav-link" href="login.php">Login / Register</a> <?php } else { ?> <a class="nav-link" href="logout.php">Logout</a> <?php } ?>
+								</li>
+						</ul>
 						<ul class="nav navbar-nav navbar-right">
 							<li class="nav-item"><a href="#" class="cart"><span class="ti-bag"></span></a></li>
 							<li class="nav-item">
